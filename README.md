@@ -27,67 +27,69 @@ This project evaluates the performance of a fine-tuned Large Language Model (LLM
 
 ---
 
-## Metrics (Validation Results)  
+# Model Evaluation
 
-| Metric              | Value   |
-|---------------------|---------|
-| Accuracy            | 0.725   |
-| Precision (Macro)   | 0.79    |
-| Recall (Macro)      | 0.73    |
-| F1-Score (Macro)    | 0.71    |
+## Metrics (Test Results)
+| Metric              | Value |
+|---------------------|-------|
+| Accuracy            | 0.80  |
+| Precision (Macro)   | 0.80  |
+| Recall (Macro)      | 0.80  |
+| F1-Score (Macro)    | 0.80  |
 
-These results show strong precision for the positive class but weaker recall, indicating difficulty in consistently identifying positive sentiment.  
+These results show balanced performance across both classes. The model achieves 80% accuracy overall, with macro-averaged precision, recall, and F1 all near 0.80 — indicating consistent detection of both positive and negative sentiment.
 
 ---
 
-## Confusion Matrix (Normalized Percentages)  
+## Classification Report (Test)
+| Class     | Precision | Recall | F1-Score | Support |
+|-----------|-----------|--------|----------|---------|
+| Negative  | 0.78      | 0.87   | 0.82     | 53      |
+| Positive  | 0.83      | 0.72   | 0.77     | 47      |
 
+- Negative class: Strong recall (0.87) and solid F1 (0.82).  
+- Positive class: Precision is high (0.83), recall is lower (0.72), but much improved compared to earlier validation results.  
+
+---
+
+## Confusion Matrix (Test Results)
 | True Class | Predicted Negative | Predicted Positive |
 |------------|--------------------|--------------------|
-| Negative   | 96%                | 4%                 |
-| Positive   | 50%                | 50%                |
-
-Interpretation: The model is highly effective at identifying negative reviews but struggles with positive reviews, correctly classifying only half of them.  
+| Negative   | 87%                | 13%                |
+| Positive   | 28%                | 72%                |
 
 ---
 
-## Error Analysis  
-The worst-performing class is **Positive**, with recall = 0.50 and F1 = 0.65. Misclassifications often occurred due to:  
-
-1. **Subtle Language**  
-   - Example: *“The film left a lasting impression.”*  
-   - Reason: Implicit positivity without explicit sentiment keywords led to misclassification.  
-
-2. **Conflicting Context**  
-   - Example: *“The acting was poor, but the ending was beautiful.”*  
-   - Reason: Mixed signals confused the model, which weighted negative cues more heavily.  
+## Error Analysis
+- Positive class: Recall improved to 0.72 (vs. 0.50 in validation). The model now correctly identifies most positive reviews, though nuanced or mixed sentiment remains challenging.  
+- Negative class: Slightly less dominant than validation (87% vs. 96%), but still strong overall.  
+- Misclassifications often occur with subtle or conflicting language, e.g.:  
+  - “The film left a lasting impression.” → implicit positivity without explicit keywords.  
+  - “The acting was poor, but the ending was beautiful.” → mixed signals confuse the model.  
 
 ---
 
-## Inference Results on Custom Reviews  
-
-| Test Case | Review Text                                       | Predicted Sentiment |
-|-----------|---------------------------------------------------|---------------------|
-| Test 1    | This movie was amazing!                           | Positive            |
-| Test 2    | Terrible acting and a boring plot.                | Negative            |
-| Test 3    | The visuals were stunning, but the story was weak.| Negative            |
-
----
-
-## Conclusion  
-- **Baseline:** Failed to recognize positives, predicting only negatives.  
-- **LoRA Fine-Tuning:** Improved performance with measurable gains in accuracy and F1 score.  
-- **Strengths:** High precision for positives, strong recall for negatives.  
-- **Limitations:** Positive recall remains low; the model struggles with mixed or nuanced sentiment.  
+## Inference Results on Custom Reviews
+| Test Case | Review Text                                        | Predicted Sentiment |
+|-----------|----------------------------------------------------|---------------------|
+| Test 1    | This movie was amazing!                            | Positive            |
+| Test 2    | Terrible acting and a boring plot.                 | Negative            |
+| Test 3    | The visuals were stunning, but the story was weak. | Negative            |
 
 ---
 
-## Metric Justification  
-Accuracy alone (72.5%) suggests moderate performance but hides class imbalance. **Macro-averaged F1-Score** is a better primary metric because:  
+## Conclusion
+- Baseline: Struggled with positives, often defaulting to negatives.  
+- LoRA Fine-Tuning: Improved balance, with measurable gains in accuracy and F1 score.  
+- Strengths: High precision for positives, strong recall for negatives.  
+- Limitations: Positive recall, while improved, is still lower than negative recall; nuanced sentiment remains difficult.  
+
+---
+
+## Metric Justification
+Accuracy alone (80%) suggests strong performance, but macro-averaged F1-Score (0.80) is a better primary metric because:  
 - It balances precision and recall.  
 - It treats both classes equally, regardless of dataset size.  
 - It exposes weaknesses in detecting positive sentiment that accuracy alone would overlook.  
 
-Thus, F1-Score provides a fairer and more informative evaluation of the model’s true performance.  
-
----
+Thus, F1-Score provides the fairest and most informative evaluation of the model’s true performance.
