@@ -1,91 +1,83 @@
-# LLM Evaluation — Sentiment Classification  
+# LLM Evaluation with Confusion Matrix  
 Author: MARK YOSINAO  
-Artificial Intelligence — Fine-Tuned Language Models, Classification Metrics, and Error Analysis  
+Artificial Intelligence — Fine-Tuning, Classification Metrics, and Error Analysis  
 
 ## Environment  
-- Python 3.11.3  
-- Hugging Face Transformers 4.x  
-- Jupyter Notebook (Anaconda environment)  
-- Scikit-learn 1.x  
-- Pandas 2.x  
-- Matplotlib / Seaborn  
-
----
+- Python 3.9 (Anaconda environment)  
+- Hugging Face Transformers 4.57.3  
+- Datasets 4.4.1  
+- Evaluate 0.4.6  
+- Scikit-learn 1.5.1  
+- Matplotlib 3.9.2 / Seaborn 0.13.2  
+- Jupyter Notebook  
 
 ## Project Overview  
-This project evaluates the performance of a fine-tuned Large Language Model (LLM) on a binary sentiment classification task. The evaluation includes calculation of key metrics, visualization of a confusion matrix, error analysis, and a comparison between baseline and fine-tuned results.  
+This project formally evaluates the performance of a fine‑tuned LLM (from Assignment 7) on a text classification task (e.g., Sentiment or Topic Classification).  
+The evaluation focuses on **in-depth classification metrics** and visualization to gain critical insights into model performance.  
+
+Key goals:  
+- Compute Accuracy, Precision, Recall, and F1‑Score (Macro‑averaged).  
+- Visualize predictions with a normalized confusion matrix.  
+- Perform error analysis on misclassified examples.  
+- Justify the choice of F1‑Score (Macro) as the primary evaluation metric.  
+
+## Dataset / Input  
+- Held‑out **Test Set** from Assignment 7.  
+- Labels: *Negative* and *Positive* sentiment (binary classification).  
+- Predictions generated using the fine‑tuned LLM.  
+
+Example metrics (Validation set):  
+- Accuracy: 0.725  
+- Precision (Macro): 0.927  
+- Recall (Macro): 0.500  
+- F1‑Score (Macro): 0.650  
+
+## Workflow Summary  
+**Metric Calculation**  
+- Predictions compared against ground truth labels.  
+- Accuracy, Precision, Recall, and F1‑Score computed with Hugging Face `evaluate` and Scikit‑learn.  
+
+**Confusion Matrix Visualization**  
+- Confusion matrix generated from predictions.  
+- Normalized to show percentages for interpretability.  
+
+**Error Analysis**  
+- Identified worst‑performing class (Positive, Recall = 0.50).  
+- Selected two misclassified examples for analysis.  
+  - Example A: Sarcasm misclassified as Negative.  
+  - Example B: Mixed sentiment misclassified as Negative.  
+- Probable reasons: ambiguity, conflicting context, and class imbalance.  
+
+**Metric Justification**  
+- Accuracy alone can be misleading in imbalanced datasets.  
+- F1‑Score (Macro) balances precision and recall across all classes.  
+- Ensures minority classes are equally weighted in evaluation.  
+
+## Evaluation  
+
+| Metric      | Value   | Notes                                      |
+|-------------|---------|--------------------------------------------|
+| Accuracy    | 0.725   | Overall correctness across 200 samples     |
+| Precision   | 0.927   | High precision, especially for Positive    |
+| Recall      | 0.500   | Positive class recall is weakest           |
+| F1‑Score    | 0.650   | Balanced measure, chosen as primary metric |
+
+### Confusion Matrix (Validation)  
+|               | Predicted Negative | Predicted Positive |
+|---------------|--------------------|--------------------|
+| **Negative**  | 94                 | 4                  |
+| **Positive**  | 51                 | 51                 |
 
 ---
 
-## Environment  
-- Python 3.11.3  
-- Hugging Face Transformers 4.x  
-- Jupyter Notebook (Anaconda environment)  
-- Scikit-learn 1.x  
-- Pandas 2.x  
-- Matplotlib / Seaborn  
+## Results  
+- Model achieved **72.5% accuracy** overall.  
+- Strong precision but weaker recall for Positive class.  
+- Confusion matrix highlights imbalance in correctly identifying Positive samples.  
+- Error analysis shows misclassifications often stem from subtle language or conflicting sentiment.  
+- F1‑Score (Macro) provides a fairer evaluation than Accuracy, making it the preferred metric.  
 
----
-
-# Model Evaluation
-
-## Metrics (Test Results)
-| Metric              | Value |
-|---------------------|-------|
-| Accuracy            | 0.80  |
-| Precision (Macro)   | 0.80  |
-| Recall (Macro)      | 0.80  |
-| F1-Score (Macro)    | 0.80  |
-
-These results show balanced performance across both classes. The model achieves 80% accuracy overall, with macro-averaged precision, recall, and F1 all near 0.80 — indicating consistent detection of both positive and negative sentiment.
-
----
-
-## Classification Report (Test)
-| Class     | Precision | Recall | F1-Score | Support |
-|-----------|-----------|--------|----------|---------|
-| Negative  | 0.78      | 0.87   | 0.82     | 53      |
-| Positive  | 0.83      | 0.72   | 0.77     | 47      |
-
-- Negative class: Strong recall (0.87) and solid F1 (0.82).  
-- Positive class: Precision is high (0.83), recall is lower (0.72), but much improved compared to earlier validation results.  
-
----
-
-## Confusion Matrix (Test Results)
-| True Class | Predicted Negative | Predicted Positive |
-|------------|--------------------|--------------------|
-| Negative   | 87%                | 13%                |
-| Positive   | 28%                | 72%                |
-
----
-
-## Error Analysis
-- Positive class: Recall improved to 0.72 (vs. 0.50 in validation). The model now correctly identifies most positive reviews, though nuanced or mixed sentiment remains challenging.  
-- Negative class: Slightly less dominant than validation (87% vs. 96%), but still strong overall.  
-- Misclassifications often occur with subtle or conflicting language, e.g.:  
-  - “The film left a lasting impression.” → implicit positivity without explicit keywords.  
-  - “The acting was poor, but the ending was beautiful.” → mixed signals confuse the model.  
-
----
-
-## Inference Results on Custom Reviews
-| Test Case | Review Text                                        | Predicted Sentiment |
-|-----------|----------------------------------------------------|---------------------|
-| Test 1    | This movie was amazing!                            | Positive            |
-| Test 2    | Terrible acting and a boring plot.                 | Negative            |
-| Test 3    | The visuals were stunning, but the story was weak. | Negative            |
-
----
-
-## Conclusion
-- Baseline: Struggled with positives, often defaulting to negatives.  
-- LoRA Fine-Tuning: Improved balance, with measurable gains in accuracy and F1 score.  
-- Strengths: High precision for positives, strong recall for negatives.  
-- Limitations: Positive recall, while improved, is still lower than negative recall; nuanced sentiment remains difficult.  
-
----
-
+This evaluation demonstrates how detailed metrics and visua
 ## Metric Justification
 Accuracy alone (80%) suggests strong performance, but macro-averaged F1-Score (0.80) is a better primary metric because:  
 - It balances precision and recall.  
